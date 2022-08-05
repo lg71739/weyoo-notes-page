@@ -25,12 +25,20 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # 1、同步到 Gitee Pages 的仓库
+      - name: Sync to Gitee Pages
+        uses: wearerequired/git-mirror-action@master
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+        with:
+          source-repo: git@github.com:liguangni/liguangni.github.io
+          destination-repo: git@gitee.com:lg71739/lg71739.git
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      # 2、刷新 Gitee Pages
+      - name: Refresh Gitee Pages
+        uses: yanglbme/gitee-pages-action@main
+        with:
+          gitee-username: lg71739
+          gitee-password: ${{ secrets.GITEE_PASSWORD }}
+          gitee-repo: lg71739/lg71739
+          branch: gh-pages
