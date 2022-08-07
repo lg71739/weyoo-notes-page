@@ -1,0 +1,25 @@
+import{_ as n}from"./plugin-vue_export-helper.21dcd24c.js";import{o as a,c as s,d as e}from"./app.380f577e.js";const i={},l=e(`<h1 id="javase-\u57FA\u7840\u8BED\u6CD5" tabindex="-1"><a class="header-anchor" href="#javase-\u57FA\u7840\u8BED\u6CD5" aria-hidden="true">#</a> JavaSE-\u57FA\u7840\u8BED\u6CD5</h1><h2 id="\u6CE8\u91CA" tabindex="-1"><a class="header-anchor" href="#\u6CE8\u91CA" aria-hidden="true">#</a> \u6CE8\u91CA</h2><p>\u5E73\u65F6\u6211\u4EEC\u7F16\u5199\u4EE3\u7801\uFF0C\u5728\u4EE3\u7801\u91CF\u6BD4\u8F83\u5C11\u7684\u65F6\u5019\uFF0C\u6211\u4EEC\u8FD8\u53EF\u4EE5\u770B\u61C2\u81EA\u5DF1\u5199\u7684\uFF0C\u4F46\u662F\u5F53\u9879\u76EE\u7ED3\u6784\u4E00\u65E6\u590D\u6742\u8D77\u6765\uFF0C\u6211\u4EEC\u5C31\u9700\u8981\u7528\u5230\u4E00\u4E2A\u6CE8\u91CA\u4E86\uFF0C\u6CE8\u91CA\u5C31\u7C7B\u4F3C\u4E8E\u6211\u4EEC\u4E0A\u5B66\u65F6\u5019\u5199\u7684\u7B14\u8BB0\uFF0C\u6211\u4EEC\u770B\u7740\u7B14\u8BB0\u5C31\u77E5\u9053\u81EA\u5DF1\u5199\u7684 \u4EC0\u4E48\u4E1C\u897F\u4E86\uFF01\u5728\u7A0B\u5E8F\u4E2D\u4E5F\u662F\u5982\u6B64\u3002\u6211\u4EEC\u6765\u770B\u4E00\u4E0BJava\u4E2D\u7684\u6CE8\u91CA\u600E\u4E48\u5199\uFF0C\u770B\u4EE5\u4E0B\u4EE3\u7801\uFF1A</p><div class="language-java ext-java line-numbers-mode"><pre class="language-java"><code><span class="token comment">/*
+* @Description HelloWorld\u7C7B
+* @Author Diamond \u72C2\u795E
+**/</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloWorld</span> <span class="token punctuation">{</span>
+    <span class="token comment">/*
+    \u8FD9\u662F\u6211\u4EECJava\u7A0B\u5E8F\u7684\u4E3B\u5165\u53E3\uFF0C
+    main\u65B9\u6CD5\u4E5F\u662F\u7A0B\u5E8F\u7684\u4E3B\u7EBF\u7A0B\u3002
+    */</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">//\u8F93\u51FAHelloWorld\uFF01</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;Hello,World!&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>\u6CE8\u91CA\u5E76\u4E0D\u4F1A\u88AB\u6267\u884C\uFF0C\u662F\u7ED9\u6211\u4EEC\u5199\u4EE3\u7801\u7684\u4EBA\u770B\u7684\uFF0C\u4E66\u5199\u6CE8\u91CA\u662F\u4E00\u4E2A\u975E\u5E38\u597D\u7684\u4E60\u60EF\u3002</p><p><strong>Java\u4E2D\u7684\u6CE8\u91CA\u6709\u4E09\u79CD\uFF1A</strong></p><p>\u5355\u884C\u6CE8\u91CA\uFF1A\u53EA\u80FD\u6CE8\u91CA\u5F53\u524D\u884C\uFF0C\u4EE5//\u5F00\u59CB\uFF0C\u76F4\u5230\u884C\u7ED3\u675F</p><div class="language-java ext-java line-numbers-mode"><pre class="language-java"><code><span class="token comment">//\u8F93\u51FAHelloWorld\uFF01</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>\u591A\u884C\u6CE8\u91CA\uFF1A\u6CE8\u91CA\u4E00\u6BB5\u6587\u5B57\uFF0C\u4EE5/*\u5F00\u59CB\uFF0C */\u7ED3\u675F\uFF01</p><div class="language-java ext-java line-numbers-mode"><pre class="language-java"><code><span class="token comment">/*
+    \u8FD9\u662F\u6211\u4EECJava\u7A0B\u5E8F\u7684\u4E3B\u5165\u53E3\uFF0C
+    main\u65B9\u6CD5\u4E5F\u662F\u7A0B\u5E8F\u7684\u4E3B\u7EBF\u7A0B\u3002
+*/</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>\u6587\u6863\u6CE8\u91CA\uFF1A\u7528\u4E8E\u751F\u4EA7API\u6587\u6863\uFF0C\u914D\u5408JavaDoc\u3002</p><div class="language-java ext-java line-numbers-mode"><pre class="language-java"><code><span class="token comment">/*
+* @Description HelloWorld\u7C7B
+* @Author Diamond \u72C2\u795E
+**/</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,12),c=[l];function d(o,t){return a(),s("div",null,c)}var v=n(i,[["render",d],["__file","01.\u6CE8\u91CA.html.vue"]]);export{v as default};
