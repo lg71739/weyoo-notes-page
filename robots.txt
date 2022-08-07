@@ -2,4 +2,4 @@
 User-agent:*
 Disallow:
 
-Sitemap: https://notes.819000.xyz/sitemap.xml
+Sitemap: https://lg71739.gitee.io/sitemap.xml
