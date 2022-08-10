@@ -35,10 +35,10 @@ jobs:
           destination-repo: git@gitee.com:liguangni/liguangni.git
 
       # 2、刷新 Gitee Pages
-      - name: Refresh Gitee Pages
-        uses: yanglbme/gitee-pages-action@main
-        with:
-          gitee-username: liguangni
-          gitee-password: ${{ secrets.GITEE_PASSWORD }}
-          gitee-repo: liguangni/liguangni
-          branch: gh-pages
+      #- name: Refresh Gitee Pages
+      #  uses: yanglbme/gitee-pages-action@main
+      #  with:
+      #    gitee-username: liguangni
+      #    gitee-password: ${{ secrets.GITEE_PASSWORD }}
+      #    gitee-repo: liguangni/liguangni
+      #    branch: gh-pages
