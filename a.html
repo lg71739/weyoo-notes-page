@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vuepress 文档工具</title>
+
+    <script src="./resources/vue/vue.js"></script>
+    <script src="./resources/elementUI/index.js"></script>
+    <script src="./resources/JsZip/jszip.min.js"></script>
+    <!-- <link rel="stylesheet" href="./resources/elementUI/index.css"> 
+
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script> -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+    <div id="app" style="width: 700px; margin: 50px auto">
+        <div style="height: 50px;">
+            <el-button type="primary" size="samll" icon="el-icon-setting" style="float:right;" @click="setBaseInfo">设置</el-button>
+        </div>
+
+        <el-form ref="form" :model="form" label-width="140px" label-position="left">
+            <el-card class="box-card">
+                <div slot="header" class="clearfix">
+                    <span>文件列表</span>
+                    <el-button style="float: right; padding: 3px 0" type="text" @click="addMdFile">新增一行</el-button>
+                </div>
+                <div>
+                    <div style="min-height: 300px;max-height: 50px;overflow-y: auto;overflow-x: hidden;">
+                        <el-row :gutter="20" v-for="(domain, index) in form.mdFiles"  :key="domain.key">
+                            <el-col :span="4"><el-input v-model="domain.key" :disabled="domain.readonly"></el-input></el-col>
+                            <el-col :span="20">
+                                <el-input placeholder="请输入文件名称" v-model="domain.value" :disabled="domain.readonly">
+                                    <el-button slot="append" icon="el-icon-delete" @click.prevent="removeDomain(domain)"></el-button>
+                                </el-input>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-divider></el-divider>
+                    <span>生成README.md</span><el-switch v-model="form.isContainReadMe" @change="changeReadmeState" style="margin-left: 5px;"></el-switch>
+                </div>
+            </el-card>
+            <div style="margin: 20px auto;text-align: center">
+                <el-button type="primary" @click="download">下载文件</el-button>
+            </div>
+        </el-form>
+
+        <el-drawer title="基础信息维护" :visible.sync="drawerVisible" size="500px;">
+            <div style="width: 400px;padding: 10px;">
+                <el-form ref="form" :model="form" label-width="140px" label-position="left">
+                    <el-form-item label="Vuepress路径">
+                        <el-input v-model="form.vuepressPath"></el-input>
+                    </el-form-item>
+                    <el-form-item label="目标文件夹">
+                        <el-input v-model="form.targetPath"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </el-drawer>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '#app', data() {
+            return {
+                form: {
+                    mdFiles: [{
+                        key: 10,
+                        value: ''
+                    }],
+                    vuepressPath: 'F:\Workspace\Git\Vuepress\notes-vuepress\src',
+                    targetPath: '',
+                    isContainReadMe: false,
+                },
+                drawerVisible: false
+            }
+        },
+        methods: {
+            setBaseInfo() {
+                this.drawerVisible = true
+            },
+            removeDomain(item) {
+                var index = this.form.mdFiles.indexOf(item)
+                if (index !== -1) {
+                    this.form.mdFiles.splice(index, 1)
+                }
+            },
+            addMdFile() {
+                this.form.mdFiles.push({
+                    key: (this.form.mdFiles.length + 1) * 10,
+                    value: ""
+                });
+            },
+            generateId(key = '0000'){
+                return Date.now().toString(36) + key.toString(36) +  Math.random().toString(36).substr(2);
+            },
+            download() {
+
+                var zip = new JSZip();
+                
+                zip.file("hello.txt", "Hello World\n");
+                
+                zip.folder("demo").file("hello.txt", "Hello World\n");
+                
+                zip.generateAsync({
+                    type: 'blob',// 压缩类型
+                    compression: "DEFLATE", // STORE：默认不压缩 DEFLATE：需要压缩
+                    compressionOptions: {
+                        level: 9 // 压缩等级1~9 1压缩速度最快，9最优压缩方式
+                    }
+                }).then(function(content) {
+                    var filename = 'hello.zip';
+                    var eleLink = document.createElement('a');
+                    eleLink.download = filename;
+                    eleLink.style.display = 'none';
+                    eleLink.href = URL.createObjectURL(content);
+                    document.body.appendChild(eleLink);
+                    eleLink.click();
+                    document.body.removeChild(eleLink);
+                });
+            },
+            changeReadmeState(enabled) {
+                if(enabled){
+                    this.form.mdFiles.unshift({key:'-', value: "README.md", readonly: true});
+                }else{
+                    this.form.mdFiles.splice(0,1);
+                }
+            },
+            getMdFileContent(key, fileName,) {
+                return `
+                title: "简介"
+                order: 10
+                date: 2022-12-02
+                permalink: "/front/vue/40/10.html"
+                category:
+                    - 大前端
+                    - Vue
+                tag:
+                    - 大前端
+                    - Vue
+                `;
+            },
+            getReadmeContent() {
+                return `
+                    dir: {
+                        text: "VueX",
+                        order: 40,
+                    }
+                    index: false
+                `;
+            }
+
+        }
+    })
+</script>
+
+</html>
+
+<style>
+    .el-row {
+        margin-bottom: 5px;
+    }
+
+    .el-row:last-child {
+        margin-bottom: 0;
+    }
+</style>
