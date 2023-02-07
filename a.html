@@ -18,49 +18,115 @@
 </head>
 
 <body>
-    <div id="app" style="width: 700px; margin: 50px auto">
-        <div style="height: 50px;">
-            <el-button type="primary" size="samll" icon="el-icon-setting" style="float:right;" @click="setBaseInfo">设置</el-button>
+    <div id="app" style="width: 800px; margin: 50px auto">
+        <div style="height: 60px;" v-if="false">
+            <el-button type="primary" plain size="samll" icon="el-icon-setting" style="float:left;" @click="setBaseInfo">设置</el-button>
         </div>
 
-        <el-form ref="form" :model="form" label-width="140px" label-position="left">
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>文件列表</span>
-                    <el-button style="float: right; padding: 3px 0" type="text" @click="addMdFile">新增一行</el-button>
-                </div>
-                <div>
-                    <div style="min-height: 300px;max-height: 50px;overflow-y: auto;overflow-x: hidden;">
-                        <el-row :gutter="20" v-for="(domain, index) in form.mdFiles"  :key="domain.key">
-                            <el-col :span="4"><el-input v-model="domain.key" :disabled="domain.readonly"></el-input></el-col>
-                            <el-col :span="20">
-                                <el-input placeholder="请输入文件名称" v-model="domain.value" :disabled="domain.readonly">
-                                    <el-button slot="append" icon="el-icon-delete" @click.prevent="removeDomain(domain)"></el-button>
-                                </el-input>
-                            </el-col>
-                        </el-row>
-                    </div>
-                    <el-divider></el-divider>
-                    <span>生成README.md</span><el-switch v-model="form.isContainReadMe" @change="changeReadmeState" style="margin-left: 5px;"></el-switch>
-                </div>
-            </el-card>
-            <div style="margin: 20px auto;text-align: center">
-                <el-button type="primary" @click="download">下载文件</el-button>
-            </div>
-        </el-form>
+        <div style="width: 80%;margin: 0 auto;">
+            <el-steps :active="active">
+                <el-step title="路径配置" icon="el-icon-setting" @click.native="changeStep(1)"></el-step>
+                <el-step title="文件信息" icon="el-icon-setting" @click.native="changeStep(2)"></el-step>
+                <el-step title="文件生成" icon="el-icon-download" @click.native="changeStep(3)"></el-step>
+            </el-steps>
+        </div>
+        <el-divider></el-divider>
 
-        <el-drawer title="基础信息维护" :visible.sync="drawerVisible" size="500px;">
-            <div style="width: 400px;padding: 10px;">
-                <el-form ref="form" :model="form" label-width="140px" label-position="left">
-                    <el-form-item label="Vuepress路径">
+        <div style="width:90%;height: 600px;margin:30px auto;">
+            <div v-show="active == 1">
+                <el-form ref="form" :model="form" label-width="90px" label-position="left">
+                    <el-form-item label="文档根路径">
                         <el-input v-model="form.vuepressPath"></el-input>
                     </el-form-item>
-                    <el-form-item label="目标文件夹">
+                    <el-form-item label="目标路径">
                         <el-input v-model="form.targetPath"></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件夹名称">
+                        <el-input v-model="form.foldName" placholder="请输入上方两个路径"></el-input>
+                    </el-form-item>
+                    <el-form-item label="链接前缀">
+                        <el-input v-model="form.permLinkPre"></el-input>
+                    </el-form-item>
+                    <el-form-item label="分类">
+                        <el-checkbox-group v-model="form.catogries">
+                            <el-checkbox v-for="item in defCatagories" :label="item" :key="item">{{item}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="标签">
+                        <el-checkbox-group v-model="form.tags">
+                            <el-checkbox v-for="item in defTags" :label="item" :key="item">{{item}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                </el-form>
+                <div style="text-align: center;">
+                    <el-button type="primary" @click="checkBaseInfo" style="margin: 20px auto;">下一步</el-button>
+                </div>
+            </div>
+            <div v-show="active == 2">
+                BBBBBBBBB
+            </div>
+
+            <div v-show="active == 3">
+                <el-form ref="form" :model="form" label-width="140px" label-position="left">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>文件列表</span>
+                            <el-button type="primary" size="small" @click="download" style="float:right;">下载文件</el-button>
+                        </div>
+                        <div>
+                            <div style="min-height: 300px;">
+                                <el-row :gutter="20" v-for="(item, index) in form.mdFiles"  :key="item.key">
+                                    <el-col :span="4"><el-input v-model="item.key" :disabled="item.readonly"></el-input></el-col>
+                                    <el-col :span="20">
+                                        <el-input placeholder="请输入文件名称" v-model="item.title" :disabled="item.readonly">
+                                            <el-button slot="append" icon="el-icon-delete" @click.prevent="removeDomain(domain)" :disabled="item.readonly"></el-button>
+                                        </el-input>
+                                    </el-col>
+                                </el-row>
+                            </div>
+                            <el-divider></el-divider>
+                            <span>生成README.md</span><el-switch v-model="form.isContainReadMe" @change="changeReadmeState" style="margin-left: 5px;"></el-switch>
+                            <el-button style="float: right; padding: 3px 0" type="text" @click="addMdFile">新增一行</el-button>
+                        </div>
+                    </el-card>
+                    <div style="margin: 20px auto;text-align: center">
+                    </div>
+                </el-form>
+            </div>
+        </div>
+
+        <el-dialog title="基础信息维护" :visible.sync="baseInfo.visible" width="500px;">
+            <div style="padding: 10px;">
+                <el-form ref="form" :model="form" label-width="90px" label-position="left">
+                    <el-form-item label="文档根路径">
+                        <el-input v-model="form.vuepressPath" @change="checkBaseInfo"></el-input>
+                    </el-form-item>
+                    <el-form-item label="目标路径">
+                        <el-input v-model="form.targetPath" @change="checkBaseInfo"></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件夹名称">
+                        <el-input v-model="form.foldName" placholder="请输入上方两个路径"></el-input>
+                    </el-form-item>
+                    <el-form-item label="链接前缀">
+                        <el-input v-model="form.permLinkPre"></el-input>
+                    </el-form-item>
+                    <el-form-item label="分类">
+                        <el-checkbox-group v-model="form.catogries">
+                            <el-checkbox v-for="item in defCatagories" :label="item" :key="item">{{item}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="标签">
+                        <el-checkbox-group v-model="form.tags">
+                            <el-checkbox v-for="item in defTags" :label="item" :key="item">{{item}}</el-checkbox>
+                        </el-checkbox-group>
                     </el-form-item>
                 </el-form>
             </div>
-        </el-drawer>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="checkBaseInfo">取 消</el-button>
+                <el-button type="primary" @click="baseInfo.visible = false" :disabled="!baseInfo.checked">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 </body>
 <script>
@@ -68,20 +134,36 @@
         el: '#app', data() {
             return {
                 form: {
-                    mdFiles: [{
-                        key: 10,
-                        value: ''
-                    }],
-                    vuepressPath: 'F:\Workspace\Git\Vuepress\notes-vuepress\src',
-                    targetPath: '',
+                    vuepressPath: "",
+                    targetPath: "",
+                    mdFiles: [],
                     isContainReadMe: false,
+                    catogries:[],
+                    tags: [],
+                    foldName:'',
+                    permLinkPre: ''
                 },
-                drawerVisible: false
+                defCatagories: ['大前端', 'Vue'],
+                defTags: ['大前端', 'Vue'],
+                active: 1,
+                baseInfo: {
+                    visible: false,
+                    checked: false
+                }
             }
+        },
+        mounted() {
+            this.addMdFile();
+            this.$nextTick(()=> {
+
+                // if(!this.baseInfo.checked)
+                //     this.setBaseInfo();
+            })
         },
         methods: {
             setBaseInfo() {
-                this.drawerVisible = true
+                this.baseInfo.visible = true
+                console.log(this.baseInfo.visible)
             },
             removeDomain(item) {
                 var index = this.form.mdFiles.indexOf(item)
@@ -90,10 +172,9 @@
                 }
             },
             addMdFile() {
-                this.form.mdFiles.push({
-                    key: (this.form.mdFiles.length + 1) * 10,
-                    value: ""
-                });
+                let key = (this.form.mdFiles.length - (this.form.isContainReadMe ? 1 : 0) + 1) * 10
+                console.log(this.form.mdFiles.length,(this.form.isContainReadMe ? 1 : 0) , this.form.isContainReadMe)
+                this.form.mdFiles.push(this.getMdFileObj(key));
             },
             generateId(key = '0000'){
                 return Date.now().toString(36) + key.toString(36) +  Math.random().toString(36).substr(2);
@@ -125,12 +206,35 @@
             },
             changeReadmeState(enabled) {
                 if(enabled){
-                    this.form.mdFiles.unshift({key:'-', value: "README.md", readonly: true});
+                    this.form.mdFiles.unshift(this.getMdFileObj("-", "README.md", true));
                 }else{
                     this.form.mdFiles.splice(0,1);
                 }
             },
-            getMdFileContent(key, fileName,) {
+            checkBaseInfo() {
+                console.log(this.form.targetPath,this.form.vuepressPath,this.form.targetPath === '' ,this.form.vuepressPath === "")
+                // if(this.form.targetPath === '' || this.form.vuepressPath === "")
+                //     return this.$message.error("路径不能为空!")
+                if(this.form.targetPath == this.form.vuepressPath)
+                    return this.$message.error("路径不能相同!")
+                if(this.form.targetPath.indexOf(this.form.vuepressPath) < 0)
+                    return this.$message.error('目标文件夹路径必须在Vuepress项目路径下');
+
+                let pathDiff = this.form.targetPath.replace(this.form.vuepressPath, "");
+                let pathArr = pathDiff.split("\\")
+
+                console.log(pathDiff, pathArr)
+                this.active++;
+            },
+            getMdFileObj(key = "", title="", readonly = false) {
+                return {
+                    key,
+                    title,
+                    readonly,
+                    randomId: this.generateId()
+                }
+            },
+            getMdFileContent(key, fileName) {
                 return `
                 title: "简介"
                 order: 10
@@ -152,8 +256,11 @@
                     }
                     index: false
                 `;
-            }
-
+            },
+            changeStep(stepIndex = 0) {
+                console.log(stepIndex)
+                this.active = stepIndex
+            },
         }
     })
 </script>
