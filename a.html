@@ -9,6 +9,7 @@
     <script src="./resources/vue/vue.js"></script>
     <script src="./resources/elementUI/index.js"></script>
     <script src="./resources/JsZip/jszip.min.js"></script>
+    <script src="./resources/momentJs/moment.min.js"></script>
     <!-- <link rel="stylesheet" href="./resources/elementUI/index.css"> 
 
     <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
@@ -25,24 +26,34 @@
 
         <div style="width: 80%;margin: 0 auto;">
             <el-steps :active="active">
-                <el-step title="路径配置" icon="el-icon-setting" @click.native="changeStep(1)"></el-step>
-                <el-step title="文件信息" icon="el-icon-setting" @click.native="changeStep(2)"></el-step>
-                <el-step title="文件生成" icon="el-icon-download" @click.native="changeStep(3)"></el-step>
+                <el-step title="路径配置" @click.native="active = 1"></el-step>
+                <el-step title="文件信息" @click.native="active = 2"></el-step>
+                <el-step title="文件生成" @click.native="active = 3"></el-step>
             </el-steps>
         </div>
         <el-divider></el-divider>
 
-        <div style="width:90%;height: 600px;margin:30px auto;">
+        <div style="width:90%;height: 600px;margin:50px auto 30px auto ;">
             <div v-show="active == 1">
                 <el-form ref="form" :model="form" label-width="90px" label-position="left">
+                    <el-form-item label="目标路径">
+                        <el-input v-model="form.targetPath" @input="setVuepressPath"></el-input>
+                    </el-form-item>
                     <el-form-item label="文档根路径">
                         <el-input v-model="form.vuepressPath"></el-input>
                     </el-form-item>
-                    <el-form-item label="目标路径">
-                        <el-input v-model="form.targetPath"></el-input>
-                    </el-form-item>
+                </el-form>
+                <div style="text-align: center;">
+                    <el-button type="primary" @click="checkBaseInfo" style="margin: 20px auto;">下一步</el-button>
+                </div>
+            </div>
+            <div v-show="active == 2">
+                <el-form ref="form" :model="form" label-width="90px" label-position="left">
                     <el-form-item label="文件夹名称">
                         <el-input v-model="form.foldName" placholder="请输入上方两个路径"></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件夹排序">
+                        <el-input v-model="form.foldOrder" placholder="请输入上方两个路径"></el-input>
                     </el-form-item>
                     <el-form-item label="链接前缀">
                         <el-input v-model="form.permLinkPre"></el-input>
@@ -62,34 +73,32 @@
                     <el-button type="primary" @click="checkBaseInfo" style="margin: 20px auto;">下一步</el-button>
                 </div>
             </div>
-            <div v-show="active == 2">
-                BBBBBBBBB
-            </div>
 
             <div v-show="active == 3">
                 <el-form ref="form" :model="form" label-width="140px" label-position="left">
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
                             <span>文件列表</span>
-                            <el-button type="primary" size="small" @click="download" style="float:right;">下载文件</el-button>
+                            <el-button style="float: right; padding: 3px 0" type="text" @click="addMdFile">新增一行</el-button>
                         </div>
                         <div>
                             <div style="min-height: 300px;">
                                 <el-row :gutter="20" v-for="(item, index) in form.mdFiles"  :key="item.key">
-                                    <el-col :span="4"><el-input v-model="item.key" :disabled="item.readonly"></el-input></el-col>
+                                    <el-col :span="4"><el-input v-model="item.key" :disabled="item.isReadMe"></el-input></el-col>
                                     <el-col :span="20">
-                                        <el-input placeholder="请输入文件名称" v-model="item.title" :disabled="item.readonly">
-                                            <el-button slot="append" icon="el-icon-delete" @click.prevent="removeDomain(domain)" :disabled="item.readonly"></el-button>
+                                        <el-input placeholder="请输入文件名称" v-model="item.title" :disabled="item.isReadMe" @change="setMdFileContent(index, $event)">
+                                            <el-button slot="append" icon="el-icon-delete" @click.prevent="removeMdFile(item, index)" :disabled="item.isReadMe"></el-button>
                                         </el-input>
                                     </el-col>
                                 </el-row>
                             </div>
                             <el-divider></el-divider>
-                            <span>生成README.md</span><el-switch v-model="form.isContainReadMe" @change="changeReadmeState" style="margin-left: 5px;"></el-switch>
-                            <el-button style="float: right; padding: 3px 0" type="text" @click="addMdFile">新增一行</el-button>
+                            <span>生成README.md</span><el-switch v-model="form.createReadme" @change="changeReadmeState" style="margin-left: 15px;"></el-switch>
+                            
                         </div>
                     </el-card>
                     <div style="margin: 20px auto;text-align: center">
+                        <el-button type="primary" size="small" @click="download" style="float:right;">下载文件</el-button>
                     </div>
                 </el-form>
             </div>
@@ -134,59 +143,68 @@
         el: '#app', data() {
             return {
                 form: {
-                    vuepressPath: "",
-                    targetPath: "",
+                    vuepressPath: localStorage.getItem("vuepressPath") || "",
+                    targetPath: localStorage.getItem("targetPath") || "",
                     mdFiles: [],
-                    isContainReadMe: false,
+                    createReadme: false,
                     catogries:[],
                     tags: [],
                     foldName:'',
+                    foldOrder: 0,
                     permLinkPre: ''
                 },
                 defCatagories: ['大前端', 'Vue'],
                 defTags: ['大前端', 'Vue'],
                 active: 1,
                 baseInfo: {
-                    visible: false,
+                    foldName: "",
+                    foldOrder: 0,
+                    permLinkPre: "",
                     checked: false
                 }
             }
         },
         mounted() {
             this.addMdFile();
-            this.$nextTick(()=> {
-
-                // if(!this.baseInfo.checked)
-                //     this.setBaseInfo();
-            })
         },
         methods: {
             setBaseInfo() {
                 this.baseInfo.visible = true
                 console.log(this.baseInfo.visible)
             },
-            removeDomain(item) {
-                var index = this.form.mdFiles.indexOf(item)
-                if (index !== -1) {
-                    this.form.mdFiles.splice(index, 1)
-                }
+            setVuepressPath(value) {
+                this.form.vuepressPath = value.substr(0, value.indexOf('\\src\\') + 4);
+                this.form.createReadme = false
+            },
+            removeMdFile(item, index) {
+                this.form.mdFiles.splice(index, 1)
             },
             addMdFile() {
-                let key = (this.form.mdFiles.length - (this.form.isContainReadMe ? 1 : 0) + 1) * 10
-                console.log(this.form.mdFiles.length,(this.form.isContainReadMe ? 1 : 0) , this.form.isContainReadMe)
+                let key = (this.form.mdFiles.length - (this.form.createReadme ? 1 : 0) + 1) * 10
                 this.form.mdFiles.push(this.getMdFileObj(key));
+            },
+            setMdFileContent(index, value) {
+                let nowItem = this.form.mdFiles[index];
+                let mdFileObj = this.getMdFileObj(nowItem.key, value)
+                this.form.mdFiles.splice(index, 1, mdFileObj)
+                console.log(this.form.mdFiles)
             },
             generateId(key = '0000'){
                 return Date.now().toString(36) + key.toString(36) +  Math.random().toString(36).substr(2);
             },
             download() {
-
                 var zip = new JSZip();
+
+                //if(this.form.createReadme)
+                    //zip = zip.folder(this.form.foldName);
                 
-                zip.file("hello.txt", "Hello World\n");
-                
-                zip.folder("demo").file("hello.txt", "Hello World\n");
-                
+                this.form.mdFiles.forEach((item, index) => {
+                    console.log(item)
+                    if(item.title !== '')
+                        zip.file(item.fileName, item.content);
+                });
+
+                const _foldName = this.form.foldName;
                 zip.generateAsync({
                     type: 'blob',// 压缩类型
                     compression: "DEFLATE", // STORE：默认不压缩 DEFLATE：需要压缩
@@ -194,7 +212,7 @@
                         level: 9 // 压缩等级1~9 1压缩速度最快，9最优压缩方式
                     }
                 }).then(function(content) {
-                    var filename = 'hello.zip';
+                    var filename = _foldName + '.zip';
                     var eleLink = document.createElement('a');
                     eleLink.download = filename;
                     eleLink.style.display = 'none';
@@ -213,56 +231,79 @@
             },
             checkBaseInfo() {
                 console.log(this.form.targetPath,this.form.vuepressPath,this.form.targetPath === '' ,this.form.vuepressPath === "")
-                // if(this.form.targetPath === '' || this.form.vuepressPath === "")
-                //     return this.$message.error("路径不能为空!")
+                if(this.form.targetPath === '' || this.form.vuepressPath === "")
+                    return this.$message.error("路径不能为空!")
                 if(this.form.targetPath == this.form.vuepressPath)
                     return this.$message.error("路径不能相同!")
                 if(this.form.targetPath.indexOf(this.form.vuepressPath) < 0)
                     return this.$message.error('目标文件夹路径必须在Vuepress项目路径下');
 
                 let pathDiff = this.form.targetPath.replace(this.form.vuepressPath, "");
-                let pathArr = pathDiff.split("\\")
+                let pathArr = pathDiff.split("\\").filter(item=>{
+                    return item && item != ''
+                });
+                let fullFoldName = pathArr[pathArr.length-1];
+                this.form.foldName = this.removeNumPre(pathArr[pathArr.length-1]);
+                if(this.form.foldName !== fullFoldName)
+                    this.form.foldOrder = fullFoldName.replace(this.form.foldName, "").replace("\.", "");
 
-                console.log(pathDiff, pathArr)
+                localStorage.setItem("vuepressPath", this.form.vuepressPath);
+                localStorage.setItem("targetPath", this.form.targetPath);
                 this.active++;
             },
-            getMdFileObj(key = "", title="", readonly = false) {
-                return {
-                    key,
-                    title,
-                    readonly,
-                    randomId: this.generateId()
+            getMdFileObj(key = "", title = "", isReadMe = false) {
+                let mdFileObj = { key, title, isReadMe, randomId: this.generateId() };
+                if (isReadMe) {
+                    mdFileObj['fileName'] = "README.md";
+                    mdFileObj['content'] = this.getReadmeContent(this.form.foldName, this.form.foldOrder);
+                } else {
+                    mdFileObj['fileName'] = key + "." + title + ".md";
+                    mdFileObj['content'] = this.getMdFileContent();
                 }
+                console.log(mdFileObj)
+                return mdFileObj
             },
-            getMdFileContent(key, fileName) {
-                return `
-                title: "简介"
-                order: 10
-                date: 2022-12-02
-                permalink: "/front/vue/40/10.html"
-                category:
-                    - 大前端
-                    - Vue
-                tag:
-                    - 大前端
-                    - Vue
-                `;
+            getMdFileContent(key, fileName, permalink = "") {
+                let content = "---\n" ;
+                content += 'title: "' + fileName + '"\n';
+                content += 'order:' + key + '\n';
+                content += 'date:' + moment().format("YYYY-MM-DD") + '\n';
+                if(permalink !== "")
+                    content += 'permalink: "' + permalink + '"\n';
+                if(this.form.catogries.length > 0){
+                    content += "category:\n";
+                    this.form.catogries.forEach((item, index) => {
+                        content += "   - " + item + "\n";
+                    })
+                }
+                if(this.form.tags.length > 0){
+                    content += "tag:\n";
+                    this.form.tags.forEach((item, index) => {
+                        content += "   - " + item + "\n";
+                    })
+                }
+                content += "---\n";
+                content += "\n";
+                content += "## 这是标题\n";
+                content += "这是内容\n";
+                return content;
             },
-            getReadmeContent() {
-                return `
-                    dir: {
-                        text: "VueX",
-                        order: 40,
-                    }
-                    index: false
-                `;
+            getReadmeContent(title = " ", order = 0) {
+                let content = "---\n";
+                content += "dir: {\n";
+                content += '    text: "' + title + '",';
+                content += '    order: "' + order + '"';
+                content += "}\n";
+                content += "index: false";
+                content += "---\n";
+                return content;
             },
-            changeStep(stepIndex = 0) {
-                console.log(stepIndex)
-                this.active = stepIndex
+            removeNumPre(str) {
+                return str.replace(/[0-9]{1,}[\.]{1}/,"");
             },
         }
     })
+const DocFileContent = "";
 </script>
 
 </html>
