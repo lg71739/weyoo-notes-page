@@ -50,10 +50,10 @@
             <div v-show="active == 2">
                 <el-form ref="form" :model="form" label-width="90px" label-position="left">
                     <el-form-item label="文件夹名称">
-                        <el-input v-model="form.foldName" placholder="请输入上方两个路径"></el-input>
+                        <el-input v-model="form.foldName" placholder="请输入文件夹名称"></el-input>
                     </el-form-item>
                     <el-form-item label="文件夹排序">
-                        <el-input v-model="form.foldOrder" placholder="请输入上方两个路径"></el-input>
+                        <el-input v-model="form.foldOrder" placholder="请输入文件夹排序数字"></el-input>
                     </el-form-item>
                     <el-form-item label="链接前缀">
                         <el-input v-model="form.permLinkPre"></el-input>
@@ -246,6 +246,7 @@
                 this.form.foldName = this.removeNumPre(pathArr[pathArr.length-1]);
                 if(this.form.foldName !== fullFoldName)
                     this.form.foldOrder = fullFoldName.replace(this.form.foldName, "").replace("\.", "");
+                this.form.permLinkPre = pathArr.join('\/');
 
                 localStorage.setItem("vuepressPath", this.form.vuepressPath);
                 localStorage.setItem("targetPath", this.form.targetPath);
