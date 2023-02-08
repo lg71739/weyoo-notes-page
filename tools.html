@@ -132,7 +132,6 @@
                 if(this.form.foldName !== fullFoldName)
                     this.form.foldOrder = fullFoldName.replace(this.form.foldName, "").replace("\.", "");
                 this.form.permLinkPre = pathArr.reduce(function(prev, cur, index, arr) {
-                    console.log(prev, cur, index);
                     if((/^[0-9]+[\.]/).test(cur)){
                         return prev + "/" + cur.substr(0, cur.indexOf('.')); 
                     } else {
@@ -247,8 +246,8 @@
                 }
                 return content;
             },
-            generateId(key = '0000'){
-                return Date.now().toString(36) + key.toString(36) +  Math.random().toString(36).substr(2);
+            generateId(){
+                return Date.now().toString(36) +  Math.random().toString(36).substr(2);
             },
             removeNumPre(str) {
                 return str.replace(/[0-9]{1,}[\.]{1}/,"");
