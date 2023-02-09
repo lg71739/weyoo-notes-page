@@ -1,0 +1,1 @@
+import{_ as t,Z as c,$ as a,a2 as e,a3 as o}from"./framework-c23f4b14.js";const s={},l=e("h2",{id:"这是标题",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#这是标题","aria-hidden":"true"},"#"),o(" 这是标题")],-1),n=e("p",null,"这是内容",-1),r=[l,n];function _(d,i){return c(),a("div",null,r)}const u=t(s,[["render",_],["__file","ldwe4uv5gzzboccxll.html.vue"]]);export{u as default};
