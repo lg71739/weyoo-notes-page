@@ -192,9 +192,7 @@
                 this.downloading = true;
                 try {
                     try {
-                        let checkPassed = await this.checkFormRule()
-                        if(!checkPassed)
-                            return ;
+                        await this.checkFormRule()
                     } catch (error) {
                         this.$message.warning(error);
                         return;
@@ -244,7 +242,8 @@
                     content += "---\n";
                     content += "dir: {\n";
                     content += '    text: ' + this.form.foldName + ',\n';
-                    content += '    order: ' + this.form.foldOrder + '\n';
+                    content += '    order: ' + this.form.foldOrder + ',\n';
+                    content += '    link: ' + false + '\n';
                     content += "}\n";
                     content += "index: false\n";
                     content += "---\n";
