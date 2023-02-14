@@ -29,7 +29,7 @@
                         <el-button type="primary" @click="download" :loading="downloading" style="float:right;">下载文件</el-button>
                     </div>
             
-                    <div style="height: 600px;margin:20px auto 30px auto ;">
+                    <div >
                         <el-card class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>文件列表</span><i class="el-icon-setting primary" @click="settingVisible= true" style="display: inline-block;margin-left: 10px; color: #409eff;"></i>
@@ -37,7 +37,7 @@
                                 <el-button style="float: right; padding: 3px 0" type="text" @click="addMdFile">新增一行</el-button>
                             </div>
                             <div v-loading="downloading" element-loading-text="下载中,请稍候..." element-loading-spinner="el-icon-loading">
-                                <div style="min-height: 300px;">
+                                <div style="min-height: 500px;">
                                     <el-row :gutter="20" v-for="(item, index) in form.mdFiles"  :key="item.key" type="flex" justify="center">
                                         <el-col :span="2"><el-input v-model="item.key" :disabled="item.isReadMeFile"></el-input></el-col>
                                         <el-col :span="12">
@@ -46,7 +46,10 @@
                                             </el-input>
                                         </el-col>
                                         <el-col :span="8"><el-input v-model="item.permalink" :disabled="item.isReadMeFile"></el-input></el-col>
-                                        <el-col :span="2"><el-button icon="el-icon-delete" @click.prevent="removeMdFile(item, index)" :disabled="item.isReadMeFile"></el-button></el-col>
+                                        <el-col :span="2">
+                                            <el-button icon="el-icon-plus" @click.prevent="addMdFile" v-if="index === 0"></el-button>
+                                            <el-button icon="el-icon-delete" @click.prevent="removeMdFile(item, index)" v-else></el-button>
+                                        </el-col>
                                     </el-row>
                                 </div>
                                 <el-divider></el-divider>
@@ -118,8 +121,8 @@
                     foldOrder: 0,
                     permLinkPre: ''
                 },
-                defCatagories: ['大前端', 'Vue'],
-                defTags: ['大前端', 'Vue'],
+                defCatagories: ['大前端', 'Vue', 'Docker'],
+                defTags: ['大前端', 'Vue', 'Docker'],
                 settingVisible: false,
                 downloading: false,
             }
@@ -129,8 +132,8 @@
                 this.settingVisible = true;
             }else {
                 await this.setVuepressPath();
+				this.addMdFile();
             }
-            this.addMdFile();
         },
         methods: {
             setVuepressPath(value) {
@@ -185,9 +188,18 @@
             getMdFileObj(key = "", title = "", isReadMeFile = false) {
                 return { key, title, isReadMeFile , permalink: this.form.permLinkPre + "/" + ( Date.now()  ) + ".html" };
             },
-            download() {
+            async download() {
                 this.downloading = true;
                 try {
+                    try {
+                        let checkPassed = await this.checkFormRule()
+                        if(!checkPassed)
+                            return ;
+                    } catch (error) {
+                        this.$message.warning(error);
+                        return;
+                    }
+
                     var zip = new JSZip();
 
                     this.form.mdFiles.forEach((item, index) => {
@@ -267,6 +279,13 @@
             removeNumPre(str) {
                 return str.replace(/[0-9]{1,}[\.]{1}/,"");
             },
+            checkFormRule(rule, value, callback) {
+                this.form.mdFiles.forEach((item, index) => {
+                    if(item.title == ''){
+                        throw new Error("文件名不能为空")
+                    }
+                });
+            }
         }
     })
 </script>
