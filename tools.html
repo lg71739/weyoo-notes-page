@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.10/lib/theme-chalk/index.css">
     <script src="./resources/JsZip/jszip.min.js"></script>
     <script src="./resources/momentJs/moment.min.js"></script>
+    <script src="./resources/axios/axios.min.js"></script>
     <!-- <link rel="stylesheet" href="./resources/elementUI/index.css"> 
 
     <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
@@ -63,7 +64,7 @@
                         </div>
                     </div>
             
-                    <el-dialog title="设置" :visible.sync="settingVisible" width="700px" center>
+                    <el-dialog title="设置" :visible.sync="settingVisible" width="700px" center @open="getTagsAndCatalogs">
                         <div>
                             <el-form ref="form" :model="form" label-width="90px" label-position="left">
                                 <el-form-item label="目标路径">
@@ -107,7 +108,7 @@
         </div>
 </body>
 <script>
-    new Vue({
+    var vm = new Vue({
         el: '#app', data() {
             return {
                 form: {
@@ -221,7 +222,7 @@
                             level: 9 // 压缩等级1~9 1压缩速度最快，9最优压缩方式
                         }
                     }).then(function(content) {
-                        var filename = _foldName + '.zip';
+                        var filename = "vuepress-" + _foldName + '.zip';
                         var eleLink = document.createElement('a');
                         eleLink.download = filename;
                         eleLink.style.display = 'none';
@@ -283,6 +284,29 @@
                     if(item.title == ''){
                         throw new Error("文件名不能为空")
                     }
+                });
+            },
+            getTagsAndCatalogs() {
+                let url = "https://www.fastmock.site/mock/1c684cf5af47a2e9eae9915336b6d103/common/vuepress/notetools/getTagsAndCatalogs"
+                axios.post( url, {})
+                .then((response) => {
+                    let rsp = response.data;
+                    console.log(response)
+                    if(rsp.success){
+                        this.defCatagories.length = 0;
+                        rsp.data.catalogs.forEach((item) => {
+                            this.defCatagories.push(item)
+                        });
+                        this.defTags.length = 0;
+                        rsp.data.tags.forEach((item) => {
+                            this.defTags.push(item)
+                        });
+                    }else {
+                        this.$message.warning("接口返回状态异常");
+                    }
+                })
+                .catch((error) => {
+                    this.$message.warning("分类获取异常:" + error);
                 });
             }
         }
