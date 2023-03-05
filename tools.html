@@ -39,23 +39,36 @@
                             </div>
                             <div v-loading="downloading" element-loading-text="下载中,请稍候..." element-loading-spinner="el-icon-loading">
                                 <div style="min-height: 500px;">
-                                    <el-row :gutter="20" v-for="(item, index) in form.mdFiles"  :key="item.key" type="flex" justify="center">
-                                        <el-col :span="2"><el-input v-model="item.key" :disabled="item.isReadMeFile"></el-input></el-col>
+                                    <el-row :gutter="20" v-if="form.createReadme" type="flex" justify="center">
+                                        <el-col :span="2"><el-input :disabled="true" value="-"></el-input></el-col>
                                         <el-col :span="12">
-                                            <el-input placeholder="请输入文件名称" v-model="item.title" :disabled="item.isReadMeFile">
+                                            <el-input placeholder="请输入文件名称" :disabled="true" value="README">
                                                 <template slot="append">.md</template>
                                             </el-input>
                                         </el-col>
-                                        <el-col :span="8"><el-input v-model="item.permalink" :disabled="item.isReadMeFile"></el-input></el-col>
+                                        <el-col :span="8"><el-input :disabled="true" value="-"></el-input></el-col>
                                         <el-col :span="2">
-                                            <el-button icon="el-icon-plus" @click.prevent="addMdFile" v-if="index === 0"></el-button>
+                                            <el-button icon="el-icon-plus" @click.prevent="addMdFile"></el-button>
+                                        </el-col>
+                                    </el-row>
+                                    <!-- 普通MD文件列表 -->
+                                    <el-row :gutter="20" v-for="(item, index) in form.mdFiles"  :key="item.key" type="flex" justify="center">
+                                        <el-col :span="2"><el-input v-model="item.key" @change="((val)=>{updateMdFileItemKey(val, index)})"></el-input></el-col>
+                                        <el-col :span="12">
+                                            <el-input placeholder="请输入文件名称" v-model="item.title">
+                                                <template slot="append">.md</template>
+                                            </el-input>
+                                        </el-col>
+                                        <el-col :span="8"><el-input v-model="item.permalink"></el-input></el-col>
+                                        <el-col :span="2">
+                                            <el-button icon="el-icon-plus" @click.prevent="addMdFile" v-if="!form.createReadme && index === 0"></el-button>
                                             <el-button icon="el-icon-delete" @click.prevent="removeMdFile(item, index)" v-else></el-button>
                                         </el-col>
                                     </el-row>
                                 </div>
                                 <el-divider></el-divider>
                                 <div style="height: 40px;display: flex;justify-content: space-between;">
-                                    <div style="margin-top: auto; margin-bottom: auto;"><span>生成README.md</span><el-switch v-model="form.createReadme" @change="changeCreateReadmeState" style="margin-left: 15px;"></el-switch></div>
+                                    <div style="margin-top: auto; margin-bottom: auto;"><span>生成README.md</span><el-switch v-model="form.createReadme" @blur="changeCreateReadmeState" style="margin-left: 15px;"></el-switch></div>
                                     <el-button type="primary" size="mini" @click="download" :loading="downloading" icon="el-icon-download">下载文件</el-button>
                                 </div>
                             </div>
@@ -173,7 +186,12 @@
                 this.settingVisible = false;
             },
             addMdFile() {
-                let key = (this.form.mdFiles.length - (this.form.createReadme ? 1 : 0) + 1) * 10
+                let key = (this.form.mdFiles.length - (this.form.createReadme ? 1 : 0) + 1) * 10;
+                key = 10;
+                if(this.form.mdFiles.length != 0) {
+                    key = Number(this.form.mdFiles[this.form.mdFiles.length - 1]['key']) + 10;
+                }
+                
                 this.form.mdFiles.push(this.getMdFileObj(key));
             },
             removeMdFile(item, index) {
@@ -181,13 +199,24 @@
             },
             changeCreateReadmeState(enabled) {
                 if(enabled){
-                    this.form.mdFiles.unshift(this.getMdFileObj("-", "README", true));
+                    //this.form.mdFiles.unshift(this.getMdFileObj("-", "README", true));
                 }else{
-                    this.form.mdFiles.splice(0,1);
+                    //this.form.mdFiles.splice(0,1);
                 }
             },
+            updateMdFileItemKey(val, index = 0) {
+                let item = this.form.mdFiles[index];
+                let permalink = item['permalink'];
+                permalink = permalink.substring(0,permalink.lastIndexOf("/") ) +  "/" + val +  "-" + permalink.substring(permalink.lastIndexOf("-") + 1);
+                item['permalink'] = this.form.permLinkPre +  "/" + key +  "-" + ( Date.now()  ) + ".html";
+                this.form.mdFiles.splice(index, 1, item);
+                this.form.mdFiles.sort(function(a,b) {
+                    return a['key'] - b['key']
+                })
+            },
             getMdFileObj(key = "", title = "", isReadMeFile = false) {
-                return { key, title, isReadMeFile , permalink: this.form.permLinkPre + "/" + ( Date.now()  ) + ".html" };
+                let permalink = this.form.permLinkPre +  "/" + key +  "-" + ( Date.now()  ) + ".html";
+                return { key, title, isReadMeFile , permalink: permalink };
             },
             async download() {
                 this.downloading = true;
@@ -201,6 +230,11 @@
 
                     var zip = new JSZip();
 
+                    //需要创建Readme文件
+                    if(this.form.createReadme){
+                        zip.file("README.md", this.getReadmeFileContent());
+                    }
+
                     this.form.mdFiles.forEach((item, index) => {
                         if(item.title !== ''){
                             if (item.isReadMeFile) {
@@ -210,7 +244,7 @@
                                 if(!item.hasOwnProperty('permalink'))
                                     item['permalink'] = this.form.permLinkPre + "/" + ( Date.now()  ) + ".html" ;
                             }
-                            zip.file(item.fileName, this.getFileContent(item));
+                            zip.file(item.fileName, this.getNormalFileContent(item));
                         }
                     });
     
@@ -237,40 +271,42 @@
                     this.downloading = false;
                 }
             },
-            getFileContent(mdFileObj) {
+            getNormalFileContent(mdFileObj) {
                 let content = "";
-                if(mdFileObj.isReadMeFile){
-                    content += "---\n";
-                    content += "dir: {\n";
-                    content += '    text: ' + this.form.foldName + ',\n';
-                    content += '    order: ' + this.form.foldOrder + ',\n';
-                    content += '    link: ' + false + '\n';
-                    content += "}\n";
-                    content += "index: false\n";
-                    content += "---\n";
-                }else{
-                    content += "---\n" ;
-                    content += 'title: ' + mdFileObj['title'] + '\n';
-                    content += 'order: ' + mdFileObj['key'] + '\n';
-                    content += 'date: ' + moment().format("YYYY-MM-DD") + '\n';
-                    content += 'permalink: ' + mdFileObj['permalink'] + '\n';
-                    if(this.form.catogries.length > 0){
-                        content += "category:\n";
-                        this.form.catogries.forEach((item, index) => {
-                            content += "   - " + item + "\n";
-                        })
-                    }
-                    if(this.form.tags.length > 0){
-                        content += "tag:\n";
-                        this.form.tags.forEach((item, index) => {
-                            content += "   - " + item + "\n";
-                        })
-                    }
-                    content += "---\n";
-                    content += "\n";
-                    content += "## 这是标题\n";
-                    content += "这是内容\n";
+                content += "---\n" ;
+                content += "title: '" + mdFileObj['title'] + "'\n";
+                content += "order: " + mdFileObj['key'] + "\n";
+                content += "date: " + moment().format("YYYY-MM-DD") + "\n";
+                content += "permalink: '" + mdFileObj['permalink'] + "'\n";
+                if(this.form.catogries.length > 0){
+                    content += "category:\n";
+                    this.form.catogries.forEach((item, index) => {
+                        content += "   - " + item + "\n";
+                    })
                 }
+                if(this.form.tags.length > 0){
+                    content += "tag:\n";
+                    this.form.tags.forEach((item, index) => {
+                        content += "   - " + item + "\n";
+                    })
+                }
+                content += "---\n";
+                content += "\n";
+                content += "## 这是标题\n";
+                content += "这是内容\n";
+                return content;
+            },
+            getReadmeFileContent(){
+                let content = "";
+                content += "---\n";
+                content += "dir: {\n";
+                content += "    text: '" + this.form.foldName + "',\n";
+                content += "    order: " + this.form.foldOrder + ",\n";
+                content += "    link: " + false + "\n";
+                content += "}\n";
+                content += "index: false\n";
+                content += "---\n";
+                
                 return content;
             },
             generateId(key = Math.random().toString().substring(2)){
