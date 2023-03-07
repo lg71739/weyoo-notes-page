@@ -52,8 +52,8 @@
                                         </el-col>
                                     </el-row>
                                     <!-- 普通MD文件列表 -->
-                                    <el-row :gutter="20" v-for="(item, index) in form.mdFiles"  :key="item.key" type="flex" justify="center">
-                                        <el-col :span="2"><el-input v-model="item.key" @change="((val)=>{updateMdFileItemKey(val, index)})"></el-input></el-col>
+                                    <el-row :gutter="20" v-for="(item, index) in form.mdFiles"  :key="index" type="flex" justify="center">
+                                        <el-col :span="2"><el-input v-model="item.key"></el-input></el-col>
                                         <el-col :span="12">
                                             <el-input placeholder="请输入文件名称" v-model="item.title">
                                                 <template slot="append">.md</template>
@@ -216,6 +216,7 @@
             },
             getMdFileObj(key = "", title = "", isReadMeFile = false) {
                 let permalink = this.form.permLinkPre +  "/" + key +  "-" + ( Date.now()  ) + ".html";
+                permalink = this.form.permLinkPre +  "/{key}-" + ( Date.now()  ) + ".html";
                 return { key, title, isReadMeFile , permalink: permalink };
             },
             async download() {
@@ -241,8 +242,11 @@
                                 item['fileName'] = "README.md";
                             } else {
                                 item['fileName'] = item.key + "." + item.title + ".md";
+                                let Tpermalink = item['permalink'] || "";
                                 if(!item.hasOwnProperty('permalink'))
-                                    item['permalink'] = this.form.permLinkPre + "/" + ( Date.now()  ) + ".html" ;
+                                    Tpermalink = this.form.permLinkPre + "/{key}/" + ( Date.now()  ) + ".html" ;
+                                
+                                item['permalink'] = Tpermalink.replace("{key}",item['key']);
                             }
                             zip.file(item.fileName, this.getNormalFileContent(item));
                         }
@@ -256,7 +260,7 @@
                             level: 9 // 压缩等级1~9 1压缩速度最快，9最优压缩方式
                         }
                     }).then(function(content) {
-                        var filename = "vuepress-" + _foldName + '.zip';
+                        var filename = "vuepress-files-" + _foldName + '.zip';
                         var eleLink = document.createElement('a');
                         eleLink.download = filename;
                         eleLink.style.display = 'none';
