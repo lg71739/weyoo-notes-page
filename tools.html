@@ -22,7 +22,10 @@
 <body>
     <div style="position:absolute; width:100%; height:100%; top:0; left:0;">
             <header class="header">
-                <h2>Vuepress 文档辅助工具 <span style="color: #9b9696;font-size:14px;font-weight: 500;display: inline-block;margin-left: 15px;">V 2.0.1</span></h2>
+                <h2>Vuepress 文档辅助工具 
+                <span style="color: #9b9696;font-size:14px;font-weight: 500;display: inline-block;margin-left: 15px;">
+                    <span style="font-size: 18px;display: inline-block;margin-right: 3px;">V</span>2.0.1</span>
+                </h2>
             </header>
             <section class="mainBox">
                 <div id="app" style="width: 900px; margin: 50px auto">
@@ -219,7 +222,7 @@
             },
             getMdFileObj(key = "", title = "", isReadMeFile = false) {
                 let permalink = this.form.permLinkPre +  "/" + key +  "-" + ( Date.now()  ) + ".html";
-                permalink = this.form.permLinkPre +  "/{key}-" + ( Date.now()  ) + ".html";
+                permalink = "{permLinkPre}" +  "/{key}-" + ( Date.now()  ) + ".html";
                 return { key, title, isReadMeFile , permalink: permalink };
             },
             async download() {
@@ -249,7 +252,7 @@
                                 if(!item.hasOwnProperty('permalink'))
                                     Tpermalink = this.form.permLinkPre + "/{key}/" + ( Date.now()  ) + ".html" ;
                                 
-                                item['permalink'] = Tpermalink.replace("{key}",item['key']);
+                                item['permalink'] = Tpermalink.replace("{key}",item['key']).replace("{permLinkPre}", this.form.permLinkPre);
                             }
                             zip.file(item.fileName, this.getNormalFileContent(item));
                         }
@@ -297,7 +300,8 @@
                         content += "   - " + item + "\n";
                     })
                 }
-                content += "---\n";
+                content += "---\n\n";
+                content += "#" + mdFileObj['title'];
                 content += "\n";
                 content += "## 这是标题\n";
                 content += "这是内容\n";
