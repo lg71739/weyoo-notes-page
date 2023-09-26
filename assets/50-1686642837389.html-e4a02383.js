@@ -1,1 +1,0 @@
-import{_ as t,U as a,V as c,W as e,a3 as r}from"./framework-0db41e67.js";const s={},o=e("h1",{id:"熔断降级配置",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#熔断降级配置","aria-hidden":"true"},"#"),r(" 熔断降级配置")],-1),_=[o];function n(d,i){return a(),c("div",null,_)}const l=t(s,[["render",n],["__file","50-1686642837389.html.vue"]]);export{l as default};
