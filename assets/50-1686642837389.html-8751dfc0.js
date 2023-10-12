@@ -1,0 +1,1 @@
+import{_ as t,o as a,c,d as e,e as o}from"./app-038269b0.js";const r={},s=e("h1",{id:"熔断降级配置",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#熔断降级配置","aria-hidden":"true"},"#"),o(" 熔断降级配置")],-1),_=[s];function n(d,i){return a(),c("div",null,_)}const l=t(r,[["render",n],["__file","50-1686642837389.html.vue"]]);export{l as default};
