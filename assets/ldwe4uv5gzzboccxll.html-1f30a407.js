@@ -1,0 +1,1 @@
+import{_ as c,o as t,c as o,d as e,e as a}from"./app-86069fa5.js";const s={},l=e("h2",{id:"这是标题",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#这是标题","aria-hidden":"true"},"#"),a(" 这是标题")],-1),n=e("p",null,"这是内容",-1),r=[l,n];function _(d,i){return t(),o("div",null,r)}const u=c(s,[["render",_],["__file","ldwe4uv5gzzboccxll.html.vue"]]);export{u as default};
