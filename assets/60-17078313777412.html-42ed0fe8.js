@@ -1,0 +1,6 @@
+import{_ as s,o as n,c as a,f as t}from"./app-f939780d.js";const e={},c=t(`<p>有时，当你在项目的一部分上已经工作一段时间后，所有东西都进入了混乱的状态，而这时你想要切换到另一个分支做一点别的事情。 问题是，你不想仅仅因为过会儿回到这一点而为做了一半的工作创建一次提交。针对这个问题的答案是<code>git stash</code>命令</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token function">git</span> stash  <span class="token comment">#命令会将未完成的修改保存到一个栈上，而你可以在任何时候重新应用这些改动(git stash apply) </span>
+<span class="token function">git</span> stash list  <span class="token comment">#查看存储</span>
+<span class="token function">git</span> stash apply stash@<span class="token punctuation">{</span><span class="token number">2</span><span class="token punctuation">}</span>  <span class="token comment">#如果不指定一个储藏，Git认为指定的是最近的储藏</span>
+<span class="token function">git</span> stash pop  <span class="token comment">#来应用储藏然后立即从栈上扔掉它</span>
+<span class="token function">git</span> stash drop  <span class="token comment">#加上将要移除的储藏的名字来移除它</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,2),o=[c];function i(p,l){return n(),a("div",null,o)}const m=s(e,[["render",i],["__file","60-17078313777412.html.vue"]]);export{m as default};
