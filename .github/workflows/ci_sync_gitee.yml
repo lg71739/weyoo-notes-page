@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  sync_to_gitee:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -42,3 +42,20 @@ jobs:
           gitee-password: ${{ secrets.GITEE_PASSWORD }}
           gitee-repo: lg71739/lg71739
           branch: gh-pages
+
+  sync_to_github_pages_lg71739:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # 1、同步到 Lg71739 Github Pages 的仓库
+      - name: Sync to Lg71739 Github Pages
+        uses: wearerequired/git-mirror-action@master
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SYNC_GITHUB_LG71739_PRIVATE_KEY }}
+        with:
+          source-repo: git@github.com:liguangni/liguangni.github.io
+          destination-repo: git@github.com:lg71739/weyoo-notes-page.git
