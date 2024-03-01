@@ -25,6 +25,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      # 1、同步到 Lg71739 Lg71739 Pages 的仓库
+      - name: Sync to Lg71739 Lg71739 Pages
+        uses: wearerequired/git-mirror-action@master
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SYNC_GITHUB_LG71739_PRIVATE_KEY }}
+        with:
+          source-repo: git@github.com:liguangni/liguangni.github.io
+          destination-repo: git@github.com:lg71739/weyoo-notes-page.git
+
       # 1、同步到 Gitee Pages 的仓库
       - name: Sync to Gitee Pages
         uses: wearerequired/git-mirror-action@master
