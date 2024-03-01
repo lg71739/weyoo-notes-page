@@ -1,1 +1,0 @@
-import{_ as t,o as a,c,d as e,e as o}from"./app-f939780d.js";const r={},s=e("h1",{id:"代码块",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#代码块","aria-hidden":"true"},"#"),o(" 代码块")],-1),_=[s];function n(d,i){return a(),c("div",null,_)}const l=t(r,[["render",n],["__file","10-1707925511608.html.vue"]]);export{l as default};

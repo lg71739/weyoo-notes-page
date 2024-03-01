@@ -1,0 +1,22 @@
+{
+    "code": 200,
+    "success": true,
+    "data": {
+        "tags": [
+            "大前端",
+            "Vue",
+            "Docker",
+            "ORM",
+            "MyBatisPlus",
+            "MyBatis"
+        ],
+        "catalogs": [
+            "大前端",
+            "Vue",
+            "Docker",
+            "ORM",
+            "MyBatisPlus",
+            "MyBatis"
+        ]
+    }
+}
